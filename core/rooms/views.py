@@ -76,6 +76,9 @@ class LogoutFromRoomView(GenericAPIView):
     def allowed_methods(self):
         return ['get']
 
+    def get_serializer_class(self):
+        pass
+
     def get(self, request, pk, format=None):
         response = Response()
         room = Room.objects.get(pk=pk)
