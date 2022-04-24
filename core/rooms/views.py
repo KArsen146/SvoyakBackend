@@ -11,6 +11,7 @@ from .serializers import *
 from rest_framework.decorators import action
 from django.conf import settings
 from django.core import serializers as django_serializers
+from django.views import View
 # from django.contrib.auth import get_user_model, authenticate
 
 
@@ -71,7 +72,7 @@ class LoginToRoomView(APIView):
         return Response(data={'status': 'ok'}, status=status.HTTP_200_OK)
 
 
-class LogoutFromRoomView(GenericAPIView):
+class LogoutFromRoomView(APIView):
     @property
     def allowed_methods(self):
         return ['get']
