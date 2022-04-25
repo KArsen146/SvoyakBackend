@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.decorators import api_view
 from rest_framework.decorators import action
 from django.conf import settings
 from django.core import serializers as django_serializers
@@ -15,7 +16,7 @@ from .models import *
 from .serializers import *
 # from core.tasks import send_email_task
 
-# Create your views here.
+
 class PlayerViewSet(ModelViewSet):
     queryset = Player.objects.all()
     permission_classes = [IsAuthenticated]
@@ -44,10 +45,6 @@ class SignUpViewSet(CreateAPIView):
 class LoginView(GenericAPIView):
     permission_classes = [AllowAny]
     serializer_class = AuthByEmailPasswordSerializer
-
-    @property
-    def allowed_methods(self):
-        return ['post']
 
     def post(self, request):
         if not request.data and isinstance(request.user, Player):
@@ -86,7 +83,7 @@ class LogoutView(APIView):
         return response
 
 
-
+@api_view(['POST'])
 def verify(request, uuid):
     try:
         user = Player.objects.get(verification_uuid=uuid, is_verified=False)

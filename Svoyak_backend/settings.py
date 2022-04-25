@@ -185,6 +185,19 @@ CHANNEL_LAYERS = {
 #     },
 # }
 
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+      'Basic': {
+            'type': 'basic'
+      },
+      'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+      }
+   }
+}
+
 
 if DEBUG:
     # CORS_ALLOW_CREDENTIALS = True
