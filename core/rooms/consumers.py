@@ -65,10 +65,12 @@ class RoomsListConsumer(JsonWebsocketConsumer):
         print('Updates sent')
 
     def disconnect(self, close_code):
+        print('Closing...')
         async_to_sync(self.channel_layer.group_discard)(
             'lobby',
             self.channel_name
         )
+        print('Closed')
 
     def receive(self, text_data):
         pass
