@@ -47,8 +47,10 @@ urlpatterns = [
     path('api/logout/', LogoutView.as_view(), name='logout'),
     path('api/rooms/<int:pk>/login/', LoginToRoomView.as_view(), name='login_to_room'),
     path('api/rooms/<int:pk>/logout/', LogoutFromRoomView.as_view(), name='logout_from_room'),
+    path('api/resend_verification_letter/', ResendVerificationLetter.as_view(), name='resend_verification'),
     path('api/verify/<uuid:verification_uuid>/', VerifyView.as_view(), name='verify'),
-    path('api/player/send_email/', send_message, name='send_message'),
+    path('api/reset_password/', ResetPassword.as_view(), name='reset_password'),
+    path('api/change_password/', ChangePassword.as_view(), name='change_password'),
     # path('api/players/', PlayerViewSet.as_view({'get': 'list'}), name='players'),
     path('api/', include(router.urls)),
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui')

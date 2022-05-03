@@ -84,6 +84,25 @@ class LogoutView(APIView):
         return response
 
 
+class ResendVerificationLetter(GenericAPIView):
+    permission_classes = [AllowAny, ]
+    serializers = ResendVerificationLetterSerializer
+
+    @property
+    def allowed_methods(self):
+        return ['post']
+
+    def get_serializer_class(self):
+        return ResendVerificationLetterSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        response = Response(data={'status': "Verification message was sent to your email"},
+                            status=status.HTTP_200_OK)
+        return response
+
+
 class VerifyView(APIView):
     @property
     def allowed_methods(self):
@@ -97,12 +116,44 @@ class VerifyView(APIView):
 
         if user.is_verified:
             return Response(data={'status': 'User is already verified'}, status=status.HTTP_403_FORBIDDEN)
+
         user.is_verified = True
         user.save()
-        response = Response(data={'status': 'verified'}, status=status.HTTP_201_CREATED)
+        response = Response(data={'status': 'verified'}, status=status.HTTP_200_OK)
         return response
 
 
-def send_message(request):
-    pass
+class ResetPassword(GenericAPIView):
+    permission_classes = [AllowAny, ]
+    serializers = ResetPasswordSerializer
 
+    @property
+    def allowed_methods(self):
+        return ['post']
+
+    def get_serializer_class(self):
+        return ResetPasswordSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        response = Response(data={'status': "New password was sent in email"}, status=status.HTTP_200_OK)
+        return response
+
+
+class ChangePassword(GenericAPIView):
+    permission_classes = [IsAuthenticated, ]
+    serializers = ChangePasswordSerializer
+
+    @property
+    def allowed_methods(self):
+        return ['post']
+
+    def get_serializer_class(self):
+        return ChangePasswordSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        attrs = serializer.is_valid(raise_exception=True)
+        response = Response(data={'status': "Password successfully changed"}, status=status.HTTP_200_OK)
+        return response

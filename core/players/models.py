@@ -2,7 +2,7 @@ import jwt
 import uuid
 from django.db import models
 # from django.contrib.auth.models import User
-from django.contrib.auth.models import BaseUserManager, AbstractUser
+from django.contrib.auth.models import BaseUserManager, AbstractUser, User
 from django.conf import settings
 from django.db.models import signals
 from django.core.mail import send_mail

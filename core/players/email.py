@@ -19,7 +19,7 @@ def send_verification_email(email, uuid):
     send_email(subject, email, html_content)
 
 
-def send_new_password(email, password):
+def send_new_password_email(email, password):
     html_content = f"<br>С вашего аккаунта был произведен запрос на сброс пароля" \
                    f"<br>Вам был сгененрирован временный пароль:" \
                    f"<br><strong> {password} </strong>" \
