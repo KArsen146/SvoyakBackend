@@ -11,6 +11,9 @@ from django.contrib.auth.hashers import make_password, check_password
 
 
 # Create your models here.
+from core.players.email import send_verification_email
+
+
 class PlayerManager(BaseUserManager):
     """
     Custom player model manager where username is the unique identifiers
@@ -83,16 +86,9 @@ class Player(AbstractUser):
         return None
 
 
-def user_post_save(sender, instance, signal, *args, **kwargs):
-    if not instance.is_verified:
-        # Send verification email
-        from django.core.mail import EmailMultiAlternatives
-
-        subject, from_email, to = 'Svoyak verify', 'no-reply.svoyak@yandex.ru', instance.email
-        html_content = f"<a href=https://jolly-morse-6d6dc0.netlify.app/registration_verify/?id={instance.verification_uuid}> Thanks for reginstration on Svoyak! Please follow the link to verify your account</a>"
-        msg = EmailMultiAlternatives(subject, html_content, from_email, [to])
-        msg.content_subtype = "html"
-        msg.send()
+def user_post_save(sender, instance, created=False, *args, **kwargs):
+    if not instance.is_verified and created:
+        send_verification_email(instance.email, instance.verification_uuid)
 
 
 signals.post_save.connect(user_post_save, sender=Player)

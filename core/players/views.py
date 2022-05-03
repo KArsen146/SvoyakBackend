@@ -1,5 +1,6 @@
 import jwt
 from rest_framework import status, filters
+from rest_framework.request import Request
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
@@ -16,6 +17,11 @@ from .models import *
 from .serializers import *
 # from core.tasks import send_email_task
 
+<<<<<<< HEAD
+=======
+# Create your views here.
+
+>>>>>>> 200f7d2 (verification email & verify endpoint)
 
 class PlayerViewSet(ModelViewSet):
     queryset = Player.objects.all()
@@ -83,15 +89,25 @@ class LogoutView(APIView):
         return response
 
 
-@api_view(['POST'])
-def verify(request, uuid):
-    try:
-        user = Player.objects.get(verification_uuid=uuid, is_verified=False)
-    except Exception:
-        return Response(data={'status': 'User does not exist or is already verified'}, status=status.HTTP_401_UNAUTHORIZED)
+class VerifyView(APIView):
+    @property
+    def allowed_methods(self):
+        return ['get']
 
-    user.is_verified = True
-    user.save()
-    response = Response(data={'status': 'created'}, status=status.HTTP_201_CREATED)
-    return response
+    def get(self, request, verification_uuid):
+        try:
+            user = Player.objects.get(verification_uuid=verification_uuid)
+        except Exception:
+            return Response(data={'status': 'User does not exist'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        if user.is_verified:
+            return Response(data={'status': 'User is already verified'}, status=status.HTTP_403_FORBIDDEN)
+        user.is_verified = True
+        user.save()
+        response = Response(data={'status': 'verified'}, status=status.HTTP_201_CREATED)
+        return response
+
+
+def send_message(request):
+    pass
 

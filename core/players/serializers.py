@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
-from rest_framework.exceptions import NotAuthenticated, PermissionDenied
+from rest_framework.exceptions import NotAuthenticated, PermissionDenied, NotFound
 from django.contrib.auth import authenticate
 from django.db import transaction
 
@@ -47,6 +47,10 @@ class AuthByEmailPasswordSerializer(ModelSerializer):
         if not player:
             msg = 'Unable to log in with provided credentials.'
             raise NotAuthenticated(msg, 'authorization')
+
+        if not player.is_verified:
+            msg = 'User is not verified'
+            raise PermissionDenied(msg)
 
         attrs['id'] = player.id
         attrs['username'] = player.username
