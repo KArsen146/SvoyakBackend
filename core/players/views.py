@@ -88,10 +88,6 @@ class ResendVerificationLetter(GenericAPIView):
     permission_classes = [AllowAny, ]
     serializers = ResendVerificationLetterSerializer
 
-    @property
-    def allowed_methods(self):
-        return ['post']
-
     def get_serializer_class(self):
         return ResendVerificationLetterSerializer
 
@@ -103,10 +99,7 @@ class ResendVerificationLetter(GenericAPIView):
         return response
 
 
-class VerifyView(APIView):
-    @property
-    def allowed_methods(self):
-        return ['get']
+class VerifyView(GenericAPIView):
 
     def get(self, request, verification_uuid):
         try:
@@ -127,10 +120,6 @@ class ResetPassword(GenericAPIView):
     permission_classes = [AllowAny, ]
     serializers = ResetPasswordSerializer
 
-    @property
-    def allowed_methods(self):
-        return ['post']
-
     def get_serializer_class(self):
         return ResetPasswordSerializer
 
@@ -144,10 +133,6 @@ class ResetPassword(GenericAPIView):
 class ChangePassword(GenericAPIView):
     permission_classes = [IsAuthenticated, ]
     serializers = ChangePasswordSerializer
-
-    @property
-    def allowed_methods(self):
-        return ['post']
 
     def get_serializer_class(self):
         return ChangePasswordSerializer
