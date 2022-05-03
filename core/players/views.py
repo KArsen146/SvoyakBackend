@@ -17,11 +17,6 @@ from .models import *
 from .serializers import *
 # from core.tasks import send_email_task
 
-<<<<<<< HEAD
-=======
-# Create your views here.
-
->>>>>>> 200f7d2 (verification email & verify endpoint)
 
 class PlayerViewSet(ModelViewSet):
     queryset = Player.objects.all()
