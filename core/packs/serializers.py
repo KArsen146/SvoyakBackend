@@ -62,7 +62,7 @@ class ThemeSerializer(ModelSerializer):
 class RoundShortSerializer(ModelSerializer):
     class Meta:
         model = Round
-        fields = ['id', 'title', '']
+        fields = ['id', 'title']  # TODO
 
 
 class RoundSerializer(ModelSerializer):
@@ -102,9 +102,8 @@ class PackSuperShortSerializer(ModelSerializer):
         model = Pack
         fields = ['id', 'title', 'author', 'rounds_count']
 
-    def get_rounds_count(self):
-        pack = Pack.objects.get(id=self.id)
-        return len(pack.rounds.all())
+    def get_rounds_count(self, instance):
+        return len(instance.rounds.all())
 
 
 class PackShortSerializer(ModelSerializer):

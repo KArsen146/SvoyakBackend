@@ -14,6 +14,7 @@ class PackViewSet(ModelViewSet):
     pagination_class = PacksListPagination
 
     def get_serializer_class(self):
-        if self.request.method == 'list':
+        print(self.request.method)
+        if self.action == 'list':
             return PackSuperShortSerializer
         return PackSerializer
