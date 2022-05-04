@@ -9,4 +9,6 @@ pip3 install -r requirements.txt
 python3 manage.py migrate
 python3 manage.py runserver
 ```
-https://jolly-morse-6d6dc0.netlify.app/
+https://svoyakbackend.herokuapp.com/
+
+https://svoyak-frontend.herokuapp.com/
