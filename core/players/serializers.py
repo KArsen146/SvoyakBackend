@@ -68,8 +68,9 @@ class ResendVerificationLetterSerializer(Serializer):
 
     def validate(self, attrs):
         email = attrs.get('email', '')
-        user = Player.objects.get(email=email)
-        if not user:
+        try:
+            user = Player.objects.get(email=email)
+        except Exception:
             msg = 'No user with this email address'
             raise NotAuthenticated(msg)
         if user.is_verified:
@@ -87,8 +88,9 @@ class ResetPasswordSerializer(Serializer):
 
     def validate(self, attrs):
         email = attrs.get('email', '')
-        user = Player.objects.get(email=email)
-        if not user:
+        try:
+            user = Player.objects.get(email=email)
+        except Exception:
             msg = 'No user with this email address'
             raise NotAuthenticated(msg)
         password = Player.objects.make_random_password()

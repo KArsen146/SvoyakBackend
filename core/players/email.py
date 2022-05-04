@@ -1,4 +1,4 @@
-from django.core.mail import EmailMultiAlternatives
+from core.tasks import send_email_html_task
 
 
 def send_email(subject, email, html_content):
@@ -6,9 +6,7 @@ def send_email(subject, email, html_content):
     html_content = "Здравствуйте!<br><br><br>" \
                    + html_content \
                    + "<br><br><br> С уважением, команда Svoyak"
-    msg = EmailMultiAlternatives(subject, html_content, from_email, [email])
-    msg.content_subtype = "html"
-    msg.send()
+    send_email_html_task.delay(subject, html_content, from_email, email)
 
 
 def send_verification_email(email, uuid):

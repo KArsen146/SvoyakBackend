@@ -34,7 +34,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '13fcf*jdjk89ht8#e5g_7(wzye4$k3rth@lmb1342dztr!))pt'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -249,3 +249,8 @@ EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 SERVER_EMAIL = EMAIL_HOST_USER
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+#CELERY FOR EMAIL SENDING
+CELERY_BROKER_URL = os.environ.get("REDIS_URL", 'redis://localhost:6379')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
