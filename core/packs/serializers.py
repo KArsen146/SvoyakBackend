@@ -122,7 +122,7 @@ class PackSerializer(ModelSerializer):
         rounds = validated_data.pop('rounds')
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
-
+        instance.save()
         for round_data in rounds:
             RoundSerializer._create(validated_data=round_data, pack=instance)
         return instance
