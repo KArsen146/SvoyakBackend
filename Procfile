@@ -1,2 +1,2 @@
 web: gunicorn Svoyak_backend.asgi:application -k uvicorn.workers.UvicornWorker
-worker: celery worker --app=tasks.app
+worker: python3.8 manage.py celery -A Svoyak_backend worker -l info
