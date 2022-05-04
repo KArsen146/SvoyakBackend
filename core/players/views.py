@@ -21,11 +21,6 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 
-@swagger_auto_schema(responses={
-    '200': openapi.Response('response description', PlayerSerializer)})
-@method_decorator(name='list', decorator=swagger_auto_schema(
-    responses={'200': openapi.Response('response description', PlayerShortSerializer)}
-))
 class PlayerViewSet(ModelViewSet):
     queryset = Player.objects.all()
     permission_classes = [IsAuthenticated]
