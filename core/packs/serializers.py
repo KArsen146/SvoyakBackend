@@ -59,6 +59,12 @@ class ThemeSerializer(ModelSerializer):
         return instance
 
 
+class RoundShortSerializer(ModelSerializer):
+    class Meta:
+        model = Round
+        fields = ['id', 'title', '']
+
+
 class RoundSerializer(ModelSerializer):
     themes = ThemeSerializer(many=True)
 
@@ -89,15 +95,29 @@ class RoundSerializer(ModelSerializer):
     #     return instance
 
 
-class PackSerializer(ModelSerializer):
-    rounds = RoundSerializer(many=True)
+class PackSuperShortSerializer(ModelSerializer):
+    rounds_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Pack
+        fields = ['id', 'title', 'author', 'rounds_count']
+
+    def get_rounds_count(self):
+        pack = Pack.objects.get(id=self.id)
+        return len(pack.rounds.all())
+
+
+class PackShortSerializer(ModelSerializer):
+    rounds = RoundShortSerializer(many=True)
+
     # author = PlayerShortSerializer
 
     class Meta:
         model = Pack
         fields = ['id', 'title', 'author', 'rounds']
-        # read_only_fields = ['id']
 
+
+class PackSerializer(PackShortSerializer):
     # MODELCLASS_NESTEDFIELD_MAP = {
     #     Pack: {'field_name': 'rounds', 'field_class': Round},
     #     Round: {'field_name': 'themes', 'field_class': Theme},
