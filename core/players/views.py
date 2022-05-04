@@ -1,4 +1,5 @@
 import jwt
+from django.utils.decorators import method_decorator
 from rest_framework import status, filters
 from rest_framework.request import Request
 from rest_framework.views import APIView
@@ -16,8 +17,15 @@ from django.core import serializers as django_serializers
 from .models import *
 from .serializers import *
 # from core.tasks import send_email_task
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 
+@swagger_auto_schema(responses={
+    '200': openapi.Response('response description', PlayerSerializer)})
+@method_decorator(name='list', decorator=swagger_auto_schema(
+    responses={'200': openapi.Response('response description', PlayerShortSerializer)}
+))
 class PlayerViewSet(ModelViewSet):
     queryset = Player.objects.all()
     permission_classes = [IsAuthenticated]
@@ -30,14 +38,16 @@ class PlayerViewSet(ModelViewSet):
 
 class SignUpViewSet(CreateAPIView):
     model = Player
-    permission_classes = [AllowAny,]
+    permission_classes = [AllowAny, ]
     serializer_class = PlayerSerializer
 
+    @swagger_auto_schema(responses={
+        '200': PlayerSerializer,
+        '400': 'Bad request'})
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        # send_email_task.delay('aboba')
 
         response = Response(data={'status': 'created'}, status=status.HTTP_201_CREATED)
         return response
@@ -47,11 +57,16 @@ class LoginView(GenericAPIView):
     permission_classes = [AllowAny]
     serializer_class = AuthByEmailPasswordSerializer
 
+    @swagger_auto_schema(responses={
+        '200': AuthByEmailPasswordSerializer,
+        '401': 'Unable to log in with provided credentials.',
+        '403': 'User is not verified'})
     def post(self, request):
         if not request.data and isinstance(request.user, Player):
             return Response(data={'email': request.user.email,
                                   'username': request.user.username,
-                                  'current_room_id': request.user.current_room_id}, status=status.HTTP_200_OK) # TODO change this shit
+                                  'current_room_id': request.user.current_room_id},
+                            status=status.HTTP_200_OK)  # TODO change this shit
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -91,6 +106,10 @@ class ResendVerificationLetter(GenericAPIView):
     def get_serializer_class(self):
         return ResendVerificationLetterSerializer
 
+    @swagger_auto_schema(responses={
+        '200': 'Verification message was sent to your email',
+        '401': 'No user with this email address',
+        '403': 'User is already verified'})
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -101,6 +120,10 @@ class ResendVerificationLetter(GenericAPIView):
 
 class VerifyView(GenericAPIView):
 
+    @swagger_auto_schema(responses={
+        '200': 'verified',
+        '401': 'User does not exist',
+        '403': 'User is already verified'})
     def get(self, request, verification_uuid):
         try:
             user = Player.objects.get(verification_uuid=verification_uuid)
@@ -123,6 +146,9 @@ class ResetPassword(GenericAPIView):
     def get_serializer_class(self):
         return ResetPasswordSerializer
 
+    @swagger_auto_schema(responses={
+        '200': 'New password was sent in email',
+        '401': 'No user with this email address'})
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -137,6 +163,10 @@ class ChangePassword(GenericAPIView):
     def get_serializer_class(self):
         return ChangePasswordSerializer
 
+    @swagger_auto_schema(responses={
+        '200': 'Password successfully changed',
+        '400': 'Passwords do not match',
+        '403': 'Old password is incorrect'})
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         attrs = serializer.is_valid(raise_exception=True)

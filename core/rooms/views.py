@@ -1,4 +1,5 @@
 import jwt
+from django.utils.decorators import method_decorator
 from rest_framework import status, filters
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -13,18 +14,20 @@ from django.conf import settings
 from django.core import serializers as django_serializers
 from django.views import View
 # from django.contrib.auth import get_user_model, authenticate
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 
+@swagger_auto_schema(responses={
+    '200': openapi.Response('response description', RoomSerializer)})
+@method_decorator(name='list', decorator=swagger_auto_schema(
+    responses={'200': openapi.Response('response description', RoomShortSerializer)}
+))
 class RoomViewSet(ModelViewSet):
     queryset = Room.objects.all()
     permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
-    # serializer_class = RoomSerializer
-
-    # def create(self, request, *args, **kwargs):
-    #     request.data['admin_id'] = request.user.id
-    #     return super().create(request, *args, **kwargs)
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -59,6 +62,9 @@ class LoginToRoomView(APIView):
         kwargs['context'] = self.get_serializer_context()
         return self.serializer_class(*args, **kwargs)
 
+    @swagger_auto_schema(responses={
+        '200': LoginToRoomSerializer,
+        '403': 'Incorrect password/Already in game'})
     def post(self, request, pk):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
