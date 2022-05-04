@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate
 from django.db import transaction
 
 from .models import *
+from core.players.serializers import PlayerShortSerializer
 
 
 class QuestionSerializer(ModelSerializer):
@@ -74,26 +75,27 @@ class RoundSerializer(ModelSerializer):
             ThemeSerializer._create(validated_data=theme_data, round=round)
         return round
 
-    @classmethod
-    def _update(cls, instance, round_data):
-        for round in instance.rounds.all():
-            round.delete()
-
-        rounds = validated_data.pop('rounds')
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-
-        for round_data in rounds:
-            RoundSerializer._create(validated_data=round_data, pack=instance)
-        return instance
+    # @classmethod
+    # def _update(cls, instance, round_data):
+    #     for round in instance.rounds.all():
+    #         round.delete()
+    #
+    #     rounds = validated_data.pop('rounds')
+    #     for attr, value in validated_data.items():
+    #         setattr(instance, attr, value)
+    #
+    #     for round_data in rounds:
+    #         RoundSerializer._create(validated_data=round_data, pack=instance)
+    #     return instance
 
 
 class PackSerializer(ModelSerializer):
     rounds = RoundSerializer(many=True)
+    # author = PlayerShortSerializer
 
     class Meta:
         model = Pack
-        fields = ['id', 'title', 'rounds']
+        fields = ['id', 'title', 'author', 'rounds']
         # read_only_fields = ['id']
 
     # MODELCLASS_NESTEDFIELD_MAP = {

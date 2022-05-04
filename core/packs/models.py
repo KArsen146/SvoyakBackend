@@ -1,8 +1,14 @@
 from django.db import models
+from core.players.models import Player
 
 
 class Pack(models.Model):
     title = models.TextField(max_length=32, null=False, blank=False, unique=True, db_index=True)
+    # author = models.ForeignKey(Player, related_name='packs', on_delete=models.CASCADE, null=True)  # TODO maybe use another on_delete
+
+    # DEPRECATED DEPRECATED DEPRECATED DEPRECATED DEPRECATED DEPRECATED DEPRECATED DEPRECATED
+    # DON'T USE IN PRODUCTION
+    author = models.TextField(max_length=32, null=True, blank=True, unique=False, db_index=True)  # TODO change this shit VERY IMPORTANT
 
 
 class Round(models.Model):
