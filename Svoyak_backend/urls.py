@@ -18,6 +18,7 @@ from django.urls import path, include
 from rest_framework import routers
 from core.players.views import *
 from core.rooms.views import *
+from core.packs.views import *
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
@@ -25,10 +26,6 @@ from django.urls import path, include
 # from rest_framework.authtoken.views import obtain_auth_token
 
 
-router = routers.DefaultRouter()
-
-router.register(r'rooms', RoomViewSet, basename='rooms')
-router.register(r'players', PlayerViewSet, basename='players')
 schema_view = get_schema_view(
    openapi.Info(
       title="Svoyak backend",
@@ -39,6 +36,12 @@ schema_view = get_schema_view(
    permission_classes=(permissions.AllowAny,),
 )
 
+
+router = routers.DefaultRouter()
+
+router.register(r'rooms', RoomViewSet, basename='rooms')
+router.register(r'players', PlayerViewSet, basename='players')
+router.register(r'packs', PackViewSet, basename='packs')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
