@@ -69,7 +69,7 @@ class LoginToRoomView(APIView):
         if player.current_room.exists() and not player.is_superuser:
             msg = 'Already in game'
             return Response({'detail': msg}, status=status.HTTP_403_FORBIDDEN)
-        room.members.add(request.user)
+        # room.members.add(request.user)  # TODO should we do it here?
         return Response(data={'status': 'ok'}, status=status.HTTP_200_OK)
 
 
