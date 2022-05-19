@@ -27,6 +27,17 @@ class QuestionSerializer(ModelSerializer):
         return instance
 
 
+class ThemeShortSerializer(ModelSerializer):
+    questions_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Theme
+        fields = ['id', 'title', 'questions_count']
+
+    def get_questions_count(self, instance):
+        return len(instance.questions.all())
+
+
 class ThemeSerializer(ModelSerializer):
     questions = QuestionSerializer(many=True)
 
@@ -60,9 +71,11 @@ class ThemeSerializer(ModelSerializer):
 
 
 class RoundShortSerializer(ModelSerializer):
+    themes = ThemeShortSerializer(many=True)
+
     class Meta:
         model = Round
-        fields = ['id', 'title']  # TODO
+        fields = ['id', 'title', 'themes']
 
 
 class RoundSerializer(ModelSerializer):
@@ -71,6 +84,7 @@ class RoundSerializer(ModelSerializer):
     class Meta:
         model = Round
         fields = ['id', 'title', 'themes']
+
         # read_only_fields = ['id']
 
     @classmethod
@@ -117,6 +131,7 @@ class PackShortSerializer(ModelSerializer):
 
 
 class PackSerializer(PackShortSerializer):
+    rounds = RoundSerializer(many=True)
     # MODELCLASS_NESTEDFIELD_MAP = {
     #     Pack: {'field_name': 'rounds', 'field_class': Round},
     #     Round: {'field_name': 'themes', 'field_class': Theme},
@@ -143,7 +158,7 @@ class PackSerializer(PackShortSerializer):
             setattr(instance, attr, value)
         instance.save()
         for round_data in rounds:
-            RoundSerializer._create(validated_data=round_data, pack=instance)
+            RoundSerializer._create(validated_data=round_data, pack=instance)  # TODO check and probably add _update
         return instance
 
     # @transaction.atomic
