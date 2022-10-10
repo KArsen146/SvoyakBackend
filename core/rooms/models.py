@@ -17,10 +17,9 @@ class Room(models.Model):
     password = models.CharField('password', max_length=128)
     admin = models.ForeignKey(Player, related_name='administration_room', db_index=True, on_delete=models.CASCADE, null=True)
     # TODO !!! uncomment !!!
-    # admin = models.OneToOneField(Player, related_name='administration_room', on_delete=models.CASCADE, db_index=True,
-    #                              null=False)
+    # admin = models.OneToOneField(Player, related_name='administration_room', on_delete=models.CASCADE, db_index=True, null=False)
     # presenter = models.OneToOneField(Player, related_name='presentation_room', on_delete=models.SET_NULL, null=True)
-    has_access = models.ManyToManyField(Player, related_name='accessible_rooms')
+    has_access = models.ManyToManyField(Player, related_name='accessible_rooms')  # TODO deprecated, remove
     members = models.ManyToManyField(Player, related_name='current_room')
     # pack = models.ForeignKey('Pack', on_delete=models.)
 
@@ -38,4 +37,7 @@ class Room(models.Model):
 
     @classmethod
     def get_all_room_names(cls):
-        return list(Room.objects.all().values_list('id', flat=True))
+        return list(Room.objects.all().values_list('id', 'name'))
+
+    def add_member(self, player):
+        pass

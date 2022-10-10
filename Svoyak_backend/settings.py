@@ -111,6 +111,7 @@ DATABASES = {
 }
 db_from_env = dj_database_url.config()
 DATABASES['default'].update(db_from_env)
+print(DATABASES['default'])
 
 
 # Password validation
@@ -170,20 +171,30 @@ REST_FRAMEWORK = {
 }
 
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
-    }
-}
-
 # CHANNEL_LAYERS = {
 #     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [("0.0.0.0", 6379)],
-#         },
-#     },
+#         "BACKEND": "channels.layers.InMemoryChannelLayer"
+#     }
 # }
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+        },
+    },
+}
+
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+      'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+      }
+   }
+}
 
 
 if DEBUG:
@@ -236,3 +247,8 @@ EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 SERVER_EMAIL = EMAIL_HOST_USER
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+#CELERY FOR EMAIL SENDING
+CELERY_BROKER_URL = os.environ.get("REDIS_URL", 'redis://localhost:6379')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
