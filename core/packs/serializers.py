@@ -1,11 +1,9 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
-from rest_framework.exceptions import NotAuthenticated, PermissionDenied, NotFound
-from django.contrib.auth import authenticate
 from django.db import transaction
 
 from .models import *
-from core.players.serializers import PlayerShortSerializer
+from ..rooms.models import Room
 
 
 class QuestionSerializer(ModelSerializer):
@@ -28,14 +26,11 @@ class QuestionSerializer(ModelSerializer):
 
 
 class ThemeShortSerializer(ModelSerializer):
-    questions_count = serializers.SerializerMethodField()
+    questions_count = serializers.ReadOnlyField()
 
     class Meta:
         model = Theme
         fields = ['id', 'title', 'questions_count']
-
-    def get_questions_count(self, instance):
-        return len(instance.questions.all())
 
 
 class ThemeSerializer(ModelSerializer):
@@ -110,34 +105,24 @@ class RoundSerializer(ModelSerializer):
 
 
 class PackSuperShortSerializer(ModelSerializer):
-    rounds_count = serializers.SerializerMethodField()
+    rounds_count = serializers.ReadOnlyField()
+    author = serializers.StringRelatedField(many=False)
 
     class Meta:
         model = Pack
         fields = ['id', 'title', 'author', 'rounds_count']
 
-    def get_rounds_count(self, instance):
-        return len(instance.rounds.all())
 
-
-class PackShortSerializer(ModelSerializer):
+class PackShortSerializer(PackSuperShortSerializer):
     rounds = RoundShortSerializer(many=True)
-
-    # author = PlayerShortSerializer
 
     class Meta:
         model = Pack
-        fields = ['id', 'title', 'author', 'rounds']
+        fields = ['id', 'title', 'author', 'rounds_count', 'rounds']
 
 
 class PackSerializer(PackShortSerializer):
     rounds = RoundSerializer(many=True)
-    # MODELCLASS_NESTEDFIELD_MAP = {
-    #     Pack: {'field_name': 'rounds', 'field_class': Round},
-    #     Round: {'field_name': 'themes', 'field_class': Theme},
-    #     Theme: {'field_name': 'questions', 'field_class': Question},
-    #     Question: {'field_name': None, 'field_class': None}
-    # }
 
     @transaction.atomic
     def create(self, validated_data):
@@ -148,51 +133,31 @@ class PackSerializer(PackShortSerializer):
             RoundSerializer._create(validated_data=round_data, pack=pack)
         return pack
 
-    @transaction.atomic
     def update(self, instance, validated_data):
-        for round in instance.rounds.all():
-            round.delete()
-
-        rounds = validated_data.pop('rounds')
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
-        for round_data in rounds:
-            RoundSerializer._create(validated_data=round_data, pack=instance)  # TODO check and probably add _update
+        room = list(Room.objects.filter(pack=instance))
+        if len(room):
+            return self.create_new_version(instance, validated_data)
+        with transaction.atomic():
+            for round in instance.rounds.all():
+                round.delete()
+            rounds = validated_data.pop('rounds')
+            for attr, value in validated_data.items():
+                setattr(instance, attr, value)
+            instance.save()
+            for round_data in rounds:
+                RoundSerializer._create(validated_data=round_data, pack=instance)  # TODO check and probably add _update
         return instance
 
-    # @transaction.atomic
-    # def update(self, instance, validated_data):
-    #     rounds = validated_data.pop('rounds')
-    #     for attr, value in validated_data.items():
-    #         setattr(instance, attr, value)
-    #     instance.save()
-    #     for round_data in rounds:
-    #         print(round_data)
-    #         round = None if 'id' not in round_data else Round.objects.filter(id=round_data['id'])
-    #         print(round)
-    #         if round:
-    #             round = round[0]
-    #             print(round.title)
-    #             RoundSerializer._update(instance=round, round_data=round_data)
-    #             print(round)
-    #         else:
-    #             RoundSerializer._create(validated_data=round_data, pack=instance)
-    #     return instance
+    @transaction.atomic
+    def create_new_version(self, instance, validated_data):
+        instance.is_deprecated = True
+        instance.save(update_fields=['is_deprecated'])
+        validated_data['version'] = instance.version + 1
+        print(validated_data)
+        pack = self.create(validated_data)
+        return pack
 
-    # def _create_model(self, validated_data, ModelClass):
-    #     nested_field_name = self.MODELCLASS_NESTEDFIELD_MAP[ModelClass]['field_name']
-    #     if nested_field_name is None:
-    #         instance = ModelClass.objects.create(**validated_data)
-    #         return instance
-    #
-    #     nested_models = validated_data.pop(nested_field_name)
-    #     instance = ModelClass.objects.create(**validated_data)
-    #     for nested_model_data in nested_models:
-    #         self._create_model(nested_model_data, self.MODELCLASS_NESTEDFIELD_MAP[ModelClass]['field_class'])
-    #
-    #     return instance
-
+    #TODO delete
     def _create_round(self, pack, round_data):
         themes = round_data.pop('themes')
         round = Round.objects.create(pack=pack, **round_data)
@@ -236,3 +201,34 @@ class PackSerializer(PackShortSerializer):
             if model_instance:
                 model_instance = model_instance[0]
                 self._update_model(instance=model_instance, data=nested_model_data, ModelClass=type(model_instance))
+
+
+class QuestionInGameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuestionInGame
+        fields = ['id', 'round_in_game', 'question', 'status']
+
+    @classmethod
+    def _create(self, round_in_game, question):
+        question_in_game = QuestionInGame.objects.create(round_in_game=round_in_game, question=question)
+        return question_in_game
+
+
+class RoundInGameSerializer(serializers.ModelSerializer):
+    questions = QuestionSerializer(many=True)
+
+    class Meta:
+        model = QuestionInGame
+        fields = ['id', 'next_round_in_game', 'round', 'not_played_questions_count', 'questions']
+
+    @classmethod
+    def _create(self, round: Round, next_round):
+        round_in_game = RoundInGame.objects.create(next_round_in_game=next_round, round=round)
+        not_played_questions_count = 0
+        for theme in list(round.themes.all()):
+            not_played_questions_count += theme.questions_count
+            for question in list(theme.questions.all()):
+                QuestionInGameSerializer._create(round_in_game=round_in_game, question=question)
+        round_in_game.not_played_questions_count = not_played_questions_count
+        round_in_game.save(update_fields=["not_played_questions_count"])
+        return round_in_game

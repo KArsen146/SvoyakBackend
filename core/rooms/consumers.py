@@ -12,19 +12,18 @@ from channels.layers import get_channel_layer
 from core.rooms.models import *
 
 
-
 class GameConsumer(JsonWebsocketConsumer):
     def connect(self):
         print(self.scope['user'])
         self.close()
-
+        # TODO create PlayerInRoom/update Player
         # self.room_name = self.scope['url_route']['kwargs']['room_code']
         # self.room_group_name = 'room_%s' % self.room_name
 
     def disconnect(self, close_code):
         pass
 
-    def receive(self, text_data):
+    def receive(self, text_data=None, bytes_data=None, **kwargs):
         pass
 
     def send_message(self, res):
@@ -34,9 +33,10 @@ class GameConsumer(JsonWebsocketConsumer):
 class RoomsListConsumer(JsonWebsocketConsumer):
     def connect(self):
         print('Connecting...')
-        # self.channel_name = 'channel_%s' % self.scope['user'].id
+        # self.channel_name = 'channel_%s' % self.scope['user'].id TODO uncomment
         time = datetime.now().time()
-        self.connection_name = 'connection_%s' % ('_'.join([str(time.hour), str(time.second), str(time.microsecond)]))
+        self.connection_name = 'connection_%s' % (
+            '_'.join([str(time.hour), str(time.second), str(time.microsecond)]))  # TODO change to user.id
 
         async_to_sync(self.channel_layer.group_add)(
             'lobby',
@@ -72,5 +72,5 @@ class RoomsListConsumer(JsonWebsocketConsumer):
         )
         print('Closed')
 
-    def receive(self, text_data):
+    def receive(self, text_data=None, bytes_data=None, **kwargs):
         pass

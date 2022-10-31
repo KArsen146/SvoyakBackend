@@ -4,15 +4,30 @@ from rest_framework.exceptions import NotAuthenticated, PermissionDenied, NotFou
 from django.contrib.auth import authenticate
 from django.db import transaction
 
-from .email import send_new_password_email
+from .email import send_new_password_email, send_verification_email
 from .models import *
 
 
+class PlayerInGameSerializer(ModelSerializer):
+
+    @classmethod
+    def _create(cls, player, room, is_room_admin=False, is_presenter=False, score=0):
+        player_in_game = PlayerInGame.objects.create(player=player, room=room, is_room_admin=is_room_admin,
+                                                     is_presenter=is_presenter, score=score)
+        return player_in_game
+
+    class Meta:
+        model = PlayerInGame
+        fields = ['room', 'is_room_admin', 'is_presenter', 'score']
+
+
 class PlayerSerializer(ModelSerializer):
+    player_in_room = PlayerInGameSerializer(read_only=True)
+
     class Meta:
         model = Player
-        fields = ['email', 'username', 'password']
-        extra_kwargs = {'password': {'write_only': True}}
+        fields = ['email', 'username', 'password', 'player_in_room']
+        extra_kwargs = {'password': {'write_only': True}, 'player_in_room': {'read_only': True}}
 
     def create(self, validated_data):
         with transaction.atomic():

@@ -17,6 +17,8 @@ from django.views import View
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
+from ..players.models import Player, PlayerInGame
+
 
 class RoomViewSet(ModelViewSet):
     queryset = Room.objects.all()
@@ -33,12 +35,14 @@ class RoomViewSet(ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         admin = Player.objects.get(id=request.user.id)
-        if (admin.administration_room.exists() or admin.current_room.exists()) and not admin.is_superuser:
-            msg = 'Already in game'
-            return Response({'detail': msg}, status=status.HTTP_403_FORBIDDEN)
-        serializer.save(admin=admin, members=[admin])
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        try:
+            admin.player_in_room.exists()
+        except:
+            serializer.save(admin=admin)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        msg = 'Already in game'
+        return Response({'detail': msg}, status=status.HTTP_403_FORBIDDEN)
 
 
 class LoginToRoomView(APIView):
@@ -58,7 +62,7 @@ class LoginToRoomView(APIView):
         return self.serializer_class(*args, **kwargs)
 
     @swagger_auto_schema(responses={
-        '200': LoginToRoomSerializer,
+        '200': "'status': 'ok'",
         '403': 'Incorrect password/Already in game'})
     def post(self, request, pk):
         serializer = self.get_serializer(data=request.data)
@@ -66,11 +70,13 @@ class LoginToRoomView(APIView):
 
         room = serializer.validated_data['room']
         player = Player.objects.get(id=request.user.id)
-        if player.current_room.exists() and not player.is_superuser:
-            msg = 'Already in game'
-            return Response({'detail': msg}, status=status.HTTP_403_FORBIDDEN)
-        # room.members.add(request.user)  # TODO should we do it here?
-        return Response(data={'status': 'ok'}, status=status.HTTP_200_OK)
+        try:
+            player_in_room = player.player_in_room
+        except AttributeError as e:
+            PlayerInGame.objects.create(room=room, player=player)  # TODO should we do it here?
+            return Response(data={'status': 'ok'}, status=status.HTTP_200_OK)
+        msg = 'Already in game'
+        return Response({'detail': msg}, status=status.HTTP_403_FORBIDDEN)
 
 
 class LogoutFromRoomView(APIView):
@@ -83,11 +89,6 @@ class LogoutFromRoomView(APIView):
 
     def get(self, request, pk, format=None):
         response = Response()
-        room = Room.objects.get(pk=pk)
-        room.members.remove(request.user)
         player = Player.objects.get(id=request.user.id)
-        if player.administration_room.exists():
-            player.administration_room.remove(room)
-            room.delete()
+        player.player_in_room.delete()
         return response
-

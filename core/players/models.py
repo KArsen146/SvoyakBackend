@@ -1,17 +1,11 @@
 import jwt
 import uuid
 from django.db import models
-# from django.contrib.auth.models import User
 from django.contrib.auth.models import BaseUserManager, AbstractUser, User
 from django.conf import settings
-from django.db.models import signals
-from django.core.mail import send_mail
-from django.urls import reverse
-from django.contrib.auth.hashers import make_password, check_password
+from django.utils.translation import gettext_lazy as _
 
-
-# Create your models here.
-from core.players.email import send_verification_email
+from core.rooms.models import Room
 
 
 class PlayerManager(BaseUserManager):
@@ -24,9 +18,6 @@ class PlayerManager(BaseUserManager):
         """
         Create and save a Player with the given email and password.
         """
-        # if not email:
-        #     raise ValueError('The Email must be set')
-        # email = self.normalize_email(email)
         player = self.model(username=username, email=email, **extra_fields)
         player.set_password(password)
         player.save()
@@ -49,7 +40,7 @@ class PlayerManager(BaseUserManager):
 
 class Player(AbstractUser):
     email = models.EmailField('email', db_index=True, max_length=64, unique=True)
-    username = models.CharField(max_length=50, blank=False, null=False, unique=True)
+    username = models.CharField(max_length=50, blank=False, null=False, unique=True, db_index=True)
     # current_room = models.ForeignKey('Room', on_delete=models.SET_NULL, null=True)
     is_verified = models.BooleanField('verified', default=False)
     verification_uuid = models.UUIDField('Unique Verification UUID', default=uuid.uuid4)
@@ -57,6 +48,9 @@ class Player(AbstractUser):
     REQUIRED_FIELDS = ['username']
 
     objects = PlayerManager()
+
+    def __str__(self):
+        return self.username
 
     def generate_jwt_token(self):
         token = jwt.encode({
@@ -81,14 +75,18 @@ class Player(AbstractUser):
 
     @property
     def current_room_id(self):
-        if len(self.current_room.all()) > 0:
-            return self.current_room.all()[0].id
-        return None
+        try:
+            return self.player_in_room.room.id
+        except:
+            return None
 
 
-def user_post_save(sender, instance, created=False, *args, **kwargs):
-    if not instance.is_verified and created:
-        send_verification_email(instance.email, instance.verification_uuid)
+class PlayerInGame(models.Model):
+    player = models.OneToOneField(Player, on_delete=models.CASCADE, primary_key=True, related_name="player_in_room")
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, null=False, related_name="players_in_room", db_index=True)
+    is_room_admin = models.BooleanField(_('room admin status'), default=False)
+    is_presenter = models.BooleanField(_('room presenter status'), default=False)
+    score = models.IntegerField(default=0, null=False)
 
-
-signals.post_save.connect(user_post_save, sender=Player)
+    def __str__(self):
+        return self.player.username
