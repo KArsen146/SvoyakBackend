@@ -7,7 +7,7 @@ from core.rooms.models import Room
 
 
 @receiver(models.signals.post_delete, sender=PlayerInGame)
-def player_in_room_pre_delete(sender, instance, *args, **kwargs):
+def player_in_room_post_delete(sender, instance, *args, **kwargs):
     with transaction.atomic():
         if instance.is_room_admin and Room.objects.get(pk=instance.room.id):
             print("Deleting room because admin lives it")

@@ -63,7 +63,7 @@ class PackViewSet(ModelViewSet):
         player = Player.objects.get(pk=request.user.id)
         title = serializer.validated_data['title']
         packs_with_same_title = Pack.objects.filter(title=title, is_deprecated=False).count()
-        if packs_with_same_title > 1 or (instance.title != title and packs_with_same_title):  # TODO change
+        if instance.title != title and packs_with_same_title:
             msg = 'Pack with this title already exists'
             return Response({'detail': msg}, status=status.HTTP_403_FORBIDDEN)
         serializer.save(author=player)
