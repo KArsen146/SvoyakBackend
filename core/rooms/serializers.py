@@ -28,7 +28,7 @@ class RoomSerializer(ModelSerializer):
 
     class Meta:
         model = Room
-        fields = ['id', 'name', 'password', 'pack', 'players_in_room']
+        fields = ['id', 'name', 'password', 'pack', 'players_in_room', 'document_id']
         # read_only_fields = ['admin']
         # fields = ['name', 'password', 'admin_id']
         extra_kwargs = {'password': {'write_only': True}}
@@ -48,7 +48,6 @@ class RoomSerializer(ModelSerializer):
         rounds.reverse() #TODO мб можно лучше
         prev_round_in_game = None
         for i in rounds:
-            print(i)
             prev_round_in_game = RoundInGameSerializer._create(round=i, next_round=prev_round_in_game)
         return room
 

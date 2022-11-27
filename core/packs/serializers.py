@@ -153,11 +153,10 @@ class PackSerializer(PackShortSerializer):
         instance.is_deprecated = True
         instance.save(update_fields=['is_deprecated'])
         validated_data['version'] = instance.version + 1
-        print(validated_data)
         pack = self.create(validated_data)
         return pack
 
-    #TODO delete
+    # TODO delete
     def _create_round(self, pack, round_data):
         themes = round_data.pop('themes')
         round = Round.objects.create(pack=pack, **round_data)

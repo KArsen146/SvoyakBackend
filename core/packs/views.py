@@ -26,7 +26,6 @@ class PackViewSet(ModelViewSet):
         return super().get_queryset().filter(is_deprecated=False)
 
     def get_serializer_class(self):
-        print(self.request.method)
         if self.action != 'list':
             return PackSerializer
 
@@ -81,4 +80,5 @@ class PackViewSet(ModelViewSet):
             self.perform_destroy(instance)
         else:
             instance.is_deprecated = True
+            instance.save()
         return Response(status=status.HTTP_204_NO_CONTENT)

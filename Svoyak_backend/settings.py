@@ -26,7 +26,6 @@ import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
@@ -37,7 +36,6 @@ SECRET_KEY = '13fcf*jdjk89ht8#e5g_7(wzye4$k3rth@lmb1342dztr!))pt'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -100,7 +98,6 @@ TEMPLATES = [
 # WSGI_APPLICATION = 'Svoyak_backend.wsgi.application'
 ASGI_APPLICATION = "Svoyak_backend.asgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
@@ -113,7 +110,6 @@ DATABASES = {
 db_from_env = dj_database_url.config()
 DATABASES['default'].update(db_from_env)
 print(DATABASES['default'])
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -133,9 +129,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 AUTH_USER_MODEL = 'players.Player'
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
@@ -147,7 +141,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
@@ -161,7 +154,6 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'core.players.authentication.JWTAuthentication',
@@ -174,7 +166,6 @@ REST_FRAMEWORK = {
     ]
 }
 
-
 # CHANNEL_LAYERS = {
 #     "default": {
 #         "BACKEND": "channels.layers.InMemoryChannelLayer"
@@ -185,21 +176,21 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+            "hosts": [
+                os.environ.get('REDIS_URL', 'redis://:BigDen2001@c-c9qpqbdqpsa2jcrvt78e.rw.mdb.yandexcloud.net:6379')],
         },
     },
 }
 
 SWAGGER_SETTINGS = {
-   'SECURITY_DEFINITIONS': {
-      'Bearer': {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
             'type': 'apiKey',
             'name': 'Authorization',
             'in': 'header'
-      }
-   }
+        }
+    }
 }
-
 
 if DEBUG:
     # CORS_ALLOW_CREDENTIALS = True
@@ -240,7 +231,6 @@ if DEBUG:
 
 TOKEN_HEADER_NAME = 'Authorization'
 
-
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.yandex.ru'
@@ -253,6 +243,7 @@ SERVER_EMAIL = EMAIL_HOST_USER
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # CELERY FOR EMAIL SENDING
-CELERY_BROKER_URL = os.environ.get("REDIS_URL", 'redis://localhost:6379')
+CELERY_BROKER_URL = os.environ.get("REDIS_URL",
+                                   'redis://:BigDen2001@c-c9qpqbdqpsa2jcrvt78e.rw.mdb.yandexcloud.net:6379')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'

@@ -1,0 +1,164 @@
+{
+  "id": 1,
+  "title": "Great pack",
+  "author": "karsen146",
+  "rounds_count": 2,
+  "rounds": [
+    {
+      "id": 4,
+      "title": "ITMO",
+      "themes": [
+        {
+          "id": 10,
+          "title": "Course 1",
+          "questions": [
+            {
+              "id": 28,
+              "text": "2 + 2?",
+              "answer": "4",
+              "price": 100
+            },
+            {
+              "id": 29,
+              "text": "Where is ITMO?",
+              "answer": "Saint-petersburg",
+              "price": 200
+            },
+            {
+              "id": 30,
+              "text": "Average salary in IT",
+              "answer": "300 000/nanosec",
+              "price": 300
+            }
+          ]
+        },
+        {
+          "id": 11,
+          "title": "Course 2",
+          "questions": [
+            {
+              "id": 31,
+              "text": "3 + 3?",
+              "answer": "6",
+              "price": 100
+            },
+            {
+              "id": 32,
+              "text": "Who created the Linux core?",
+              "answer": "Linus Torvalds",
+              "price": 200
+            },
+            {
+              "id": 33,
+              "text": "6 + 7?",
+              "answer": "13",
+              "price": 300
+            }
+          ]
+        },
+        {
+          "id": 12,
+          "title": "Course 3",
+          "questions": [
+            {
+              "id": 34,
+              "text": "4 - 2 ?",
+              "answer": "2",
+              "price": 100
+            },
+            {
+              "id": 35,
+              "text": "MacOS vs Windows: which is better?",
+              "answer": "Linux",
+              "price": 200
+            },
+            {
+              "id": 36,
+              "text": "Do you like maths?",
+              "answer": "Yes!!!",
+              "price": 300
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Yandex",
+      "themes": [
+        {
+          "id": 13,
+          "title": "Frontend",
+          "questions": [
+            {
+              "id": 37,
+              "text": "Yandex old js-framework?",
+              "answer": "IBEM",
+              "price": 100
+            },
+            {
+              "id": 38,
+              "text": "Yandex current js-framework?",
+              "answer": "React",
+              "price": 200
+            },
+            {
+              "id": 39,
+              "text": "How to install packages?",
+              "answer": "npm i",
+              "price": 300
+            }
+          ]
+        },
+        {
+          "id": 14,
+          "title": "Backend",
+          "questions": [
+            {
+              "id": 40,
+              "text": "Yandex Taxi backend language?",
+              "answer": "mainly c++",
+              "price": 100
+            },
+            {
+              "id": 41,
+              "text": "Python most famous framework?",
+              "answer": "django",
+              "price": 200
+            },
+            {
+              "id": 42,
+              "text": "Are backenders rich?",
+              "answer": "yes",
+              "price": 300
+            }
+          ]
+        },
+        {
+          "id": 15,
+          "title": "Eating",
+          "questions": [
+            {
+              "id": 43,
+              "text": "Bage limit in SPB?",
+              "answer": "700 rubles",
+              "price": 100
+            },
+            {
+              "id": 44,
+              "text": "Bage limit in Moscow?",
+              "answer": "800 rubles",
+              "price": 200
+            },
+            {
+              "id": 45,
+              "text": "Bage limit in EKB?",
+              "answer": "600 rubles",
+              "price": 300
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

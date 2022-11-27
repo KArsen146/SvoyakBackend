@@ -12,7 +12,6 @@ from core.rooms.models import *
 @receiver(signal=post_delete, sender=Room, dispatch_uid='update_rooms_in_lobby_on_delete')
 @receiver(signal=post_save, sender=Room, dispatch_uid='update_rooms_in_lobby_on_create')
 def update_rooms_in_lobby(sender, instance, *args, **kwargs):
-    print(kwargs)
     transaction.on_commit(lambda: __update_rooms_in_lobby(sender, instance, **kwargs))
 
 

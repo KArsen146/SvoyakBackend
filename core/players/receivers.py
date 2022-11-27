@@ -14,8 +14,8 @@ def player_in_room_post_delete(sender, instance, *args, **kwargs):
             Room.objects.get(pk=instance.room.id).delete()
 
 
-@receiver(models.signals.post_save, sender=Player)
+@receiver(models.signals.post_save, sender=Player, dispatch_uid="my_id")
 def user_post_save(sender, instance, created=False, *args, **kwargs):
     if not instance.is_verified and created:
-        print("Creating task send verification letter")
+        print("Creating task send letter")
         send_verification_email(instance.email, instance.verification_uuid)

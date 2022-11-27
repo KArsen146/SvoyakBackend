@@ -36,7 +36,7 @@ class RoomViewSet(ModelViewSet):
         serializer.is_valid(raise_exception=True)
         admin = Player.objects.get(id=request.user.id)
         try:
-            admin.player_in_room.exists()
+            a = admin.player_in_room
         except:
             serializer.save(admin=admin)
             headers = self.get_success_headers(serializer.data)

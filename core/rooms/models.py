@@ -18,6 +18,7 @@ class Room(models.Model):
     password = models.CharField('password', max_length=128)
     pack = models.ForeignKey(Pack, on_delete=models.CASCADE, null=False, related_name="rooms_with_pack", db_index=True)
     current_round = models.ForeignKey(RoundInGame, on_delete=models.CASCADE, default=None, null=True, db_index=True) #TODO CHECK
+    document_id = models.CharField(max_length=50, blank=False, default=None)
     # admin = models.ForeignKey(Player, related_name='administration_room', db_index=True, on_delete=models.CASCADE, null=True)
     # # TODO !!! uncomment !!!
     # # admin = models.OneToOneField(Player, related_name='administration_room', on_delete=models.CASCADE, db_index=True, null=False)

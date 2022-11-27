@@ -1,0 +1,136 @@
+{
+  "title": "Great pack",
+  "author": "kek",
+  "rounds": [
+    {
+      "title": "ITMO",
+      "themes": [
+        {
+          "title": "Course 1",
+          "questions": [
+            {
+              "text": "2 + 2?",
+              "answer": "4",
+              "price": "100"
+            },
+            {
+              "text": "Where is ITMO?",
+              "answer": "Saint-petersburg",
+              "price": "200"
+            },
+            {
+              "text": "Average salary in IT",
+              "answer": "300 000/nanosec",
+              "price": "300"
+            }
+          ]
+        },
+        {
+          "title": "Course 2",
+          "questions": [
+            {
+              "text": "3 + 3?",
+              "answer": "6",
+              "price": "100"
+            },
+            {
+              "text": "Who created the Linux core?",
+              "answer": "Linus Torvalds",
+              "price": "200"
+            },
+            {
+              "text": "6 + 7?",
+              "answer": "13",
+              "price": "300"
+            }
+          ]
+        },
+        {
+          "title": "Course 3",
+          "questions": [
+            {
+              "text": "4 - 2 ?",
+              "answer": "2",
+              "price": "100"
+            },
+            {
+              "text": "MacOS vs Windows: which is better?",
+              "answer": "Linux",
+              "price": "200"
+            },
+            {
+              "text": "Do you like maths?",
+              "answer": "Yes!!!",
+              "price": "300"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Yandex",
+      "themes": [
+        {
+          "title": "Frontend",
+          "questions": [
+            {
+              "text": "Yandex old js-framework?",
+              "answer": "IBEM",
+              "price": "100"
+            },
+            {
+              "text": "Yandex current js-framework?",
+              "answer": "React",
+              "price": "200"
+            },
+            {
+              "text": "How to install packages?",
+              "answer": "npm i",
+              "price": "300"
+            }
+          ]
+        },
+        {
+          "title": "Backend",
+          "questions": [
+            {
+              "text": "Yandex Taxi backend language?",
+              "answer": "mainly c++",
+              "price": "100"
+            },
+            {
+              "text": "Python most famous framework?",
+              "answer": "django",
+              "price": "200"
+            },
+            {
+              "text": "Are backenders rich?",
+              "answer": "yes",
+              "price": "300"
+            }
+          ]
+        },
+        {
+          "title": "Eating",
+          "questions": [
+            {
+              "text": "Bage limit in SPB?",
+              "answer": "700 rubles",
+              "price": "100"
+            },
+            {
+              "text": "Bage limit in Moscow?",
+              "answer": "800 rubles",
+              "price": "200"
+            },
+            {
+              "text": "Bage limit in EKB?",
+              "answer": "600 rubles",
+              "price": "300"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
