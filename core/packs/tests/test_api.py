@@ -45,6 +45,16 @@ class PackApiTestCase(APITestCase):
         assert response.status_code == 201
         assert response.json() == json.load(open("core/packs/tests/test_data/pack1_response.json"))
 
+    def test_create_with_not_unique_title(self):
+        val = json.load(open("core/packs/tests/test_data/pack1.json"))
+        response = self.c.post('/api/packs/', data=val, format='json')
+        assert response.status_code == 201
+
+        val = json.load(open("core/packs/tests/test_data/pack1.json"))
+        response = self.c.post('/api/packs/', data=val, format='json')
+        assert response.status_code == 403
+        assert response.data == {'detail': 'Pack with this title already exists'}
+
     def test_get(self):
         pack = create_pack(self.p)
         response = self.c.get('/api/packs/' + str(pack.id) + '/')
@@ -104,3 +114,18 @@ class PackApiTestCase(APITestCase):
         response = self.c.get(path=reverse('packs-list'))
         assert response.status_code == 200
         assert response.data.get('count') == 11
+
+    def test_filter_pack(self):
+        create_pack(self.p)
+        create_pack(self.p, "New pack2")
+        create_pack(self.p, "Old pack3")
+
+        response = self.c.get('/api/packs/?title=New')
+        assert response.status_code == 200
+        assert response.data.get('count') == 2
+
+        p2 = create_player(first=False)
+        create_pack(p2, "Old pack4")
+        response = self.c.get('/api/packs/?author=' + self.p.username)
+        assert response.status_code == 200
+        assert response.data.get('count') == 3

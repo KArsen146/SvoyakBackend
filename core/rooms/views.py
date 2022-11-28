@@ -79,6 +79,9 @@ class LoginToRoomView(APIView):
         return Response({'detail': msg}, status=status.HTTP_403_FORBIDDEN)
 
 
+@swagger_auto_schema(responses={
+        '200': "'status': 'ok'",
+        '403': 'Not in this room/Do not have any room'})
 class LogoutFromRoomView(APIView):
     @property
     def allowed_methods(self):
@@ -90,5 +93,14 @@ class LogoutFromRoomView(APIView):
     def get(self, request, pk, format=None):
         response = Response()
         player = Player.objects.get(id=request.user.id)
-        player.player_in_room.delete()
-        return response
+        try:
+            id = player.player_in_room.room.id
+            if pk == id:
+                player.player_in_room.delete()
+                return response
+            else:
+                msg = 'Not in this room'
+                return Response({'detail': msg}, status=status.HTTP_403_FORBIDDEN)
+        except:
+            msg = 'Do not have any room'
+            return Response({'detail': msg}, status=status.HTTP_403_FORBIDDEN)
