@@ -8,7 +8,14 @@ from .email import send_new_password_email, send_verification_email
 from .models import *
 
 
+class PlayerShortSerializer(ModelSerializer):
+    class Meta:
+        model = Player
+        fields = ['username']
+
+
 class PlayerInGameSerializer(ModelSerializer):
+    player = PlayerShortSerializer(read_only=True)
 
     @classmethod
     def _create(cls, player, room, is_room_admin=False, is_presenter=False, score=0):
@@ -18,7 +25,8 @@ class PlayerInGameSerializer(ModelSerializer):
 
     class Meta:
         model = PlayerInGame
-        fields = ['room', 'is_room_admin', 'is_presenter', 'score']
+        fields = ['player', 'room', 'is_room_admin', 'is_presenter', 'score']
+        extra_kwargs = {'player': {'read_only': True}}
 
 
 class PlayerSerializer(ModelSerializer):
@@ -37,12 +45,6 @@ class PlayerSerializer(ModelSerializer):
             player.save(update_fields=['password'])
 
         return player
-
-
-class PlayerShortSerializer(ModelSerializer):
-    class Meta:
-        model = Player
-        fields = ['username']
 
 
 class AuthByEmailPasswordSerializer(ModelSerializer):
